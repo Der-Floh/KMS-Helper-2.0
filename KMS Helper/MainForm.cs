@@ -1,4 +1,5 @@
 using KMS_Toolkit;
+using Microsoft.Win32.TaskScheduler;
 using NativeWifi;
 using System.ComponentModel;
 using System.Text;
@@ -8,10 +9,7 @@ namespace KMS_Helper
 {
     public sealed partial class MainForm : Form
     {
-        private WlanClient client = new WlanClient();
-        private List<Wlan.Dot11Ssid> networkList = new List<Wlan.Dot11Ssid>();
         private BindingList<Proxy> proxies = new BindingList<Proxy>();
-        private Dictionary<Wlan.Dot11Ssid, string> networkDictionary = new Dictionary<Wlan.Dot11Ssid, string>();
         private const string shortcutName = "KMS-Helper";
         private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.Timer loadingTimer;
@@ -78,66 +76,22 @@ namespace KMS_Helper
 
         private void PullNetworkList(object sender, EventArgs e)
         {
-            List<Wlan.Dot11Ssid> networkListOld = new List<Wlan.Dot11Ssid>(networkList);
-            networkList.Clear();
-            Wlan.Dot11Ssid ssidOld;
-            Wlan.Dot11Ssid ssidNew;
-            ssidOld.SSID = new byte[1];
-
-            foreach (WlanClient.WlanInterface wlanIface in client.Interfaces)
-            {
-                Wlan.WlanAvailableNetwork[] networks = wlanIface.GetAvailableNetworkList(0);
-                foreach (Wlan.WlanAvailableNetwork network in networks)
-                {
-                    ssidNew = network.dot11Ssid;
-                    if (!ssidNew.SSID.SequenceEqual(ssidOld.SSID))
-                    {
-                        ssidOld = ssidNew;
-                        string networkname = Encoding.ASCII.GetString(ssidNew.SSID, 0, (int)ssidNew.SSIDLength);
-                        if (networkname != "")
-                        {
-                            networkList.Add(ssidNew);
-                        }
-                    }
-                }
-            }
-            FillNetworkList(networkListOld);
+            FillNetworkList(Program.PullNetworkList());
         }
 
-        private async Task FillNetworkList(List<Wlan.Dot11Ssid> networkListOld)
+        private async System.Threading.Tasks.Task FillNetworkList(List<Wlan.Dot11Ssid> networkListOld)
         {
-            if (networkList.Count != 0 && !ListsEqual(networkList, networkListOld))
+            if (Program.networkList.Count != 0 && !Program.ListsEqual(Program.networkList, networkListOld))
             {
                 int selected = NetworkListBox.SelectedIndex;
-                networkDictionary.Clear();
-                foreach (Wlan.Dot11Ssid network in networkList)
+                Program.networkDictionary.Clear();
+                foreach (Wlan.Dot11Ssid network in Program.networkList)
                 {
-                    networkDictionary.Add(network, Encoding.ASCII.GetString(network.SSID, 0, (int)network.SSIDLength));
+                    Program.networkDictionary.Add(network, Encoding.ASCII.GetString(network.SSID, 0, (int)network.SSIDLength));
                 }
-                NetworkListBox.DataSource = new BindingSource(networkDictionary, null);
+                NetworkListBox.DataSource = new BindingSource(Program.networkDictionary, null);
                 NetworkListBox.SelectedIndex = selected;
             }
-        }
-
-        private bool ListsEqual(List<Wlan.Dot11Ssid> _networkList1, List<Wlan.Dot11Ssid> _networkList2)
-        {
-            Wlan.Dot11Ssid[] networkList1 = _networkList1.ToArray();
-            Wlan.Dot11Ssid[] networkList2 = _networkList2.ToArray();
-            for (int i = 0; i < networkList1.Length; i++)
-            {
-                for (int j = 0; j < networkList1[i].SSID.Length; j++)
-                {
-                    try
-                    {
-                        if (networkList1[i].SSID[j] != networkList2[i].SSID[j]) return false;
-                    }
-                    catch (IndexOutOfRangeException)
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
         }
 
         private void AddShortcutInStartmenu()
@@ -194,6 +148,15 @@ namespace KMS_Helper
             Settings.autoStartRunBackground = SettingsRunBgOnStartCheckBox.Checked;
 
             Settings.windowPosition = Location;
+
+            if (Settings.autoStart && !Program.TaskExists)
+            {
+                Program.CreateLogonWindowsTask();
+            }
+            else if (!Settings.autoStart)
+            {
+                Program.RemoveLogonWindowsTask();
+            }
         }
 
         private void NetworkListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -240,15 +203,6 @@ namespace KMS_Helper
             if (!proxies.ToList().Exists(p => p.proxyHost == proxyHost && p.proxyPort == proxyPort))
             {
                 proxies.Add(new Proxy { proxyHost = proxyHost, proxyPort = proxyPort });
-                //ProxyListBox.DataSource = proxies;
-                //ProxyListBox.Update();
-                /*
-                ProxyListBox.Items.Clear();
-                foreach (Proxy proxy in proxies)
-                {
-                    ProxyListBox.Items.Add(proxy);
-                }
-                */
             }
         }
 
@@ -309,8 +263,18 @@ namespace KMS_Helper
 
         private void ProxyListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateSettings();
-            UpdateSettingsPanel();
+            Settings.proxies = proxies;
+            Settings.selectedProxy = ProxyListBox.SelectedIndex;
+            if (ProxyListBox.SelectedIndex != -1)
+            {
+                SettingsProxyHostTextBox.Text = Settings.proxies[ProxyListBox.SelectedIndex].proxyHost;
+                SettingsProxyPortTextBox.Text = Settings.proxies[ProxyListBox.SelectedIndex].proxyPort.ToString();
+            }
+            else
+            {
+                SettingsProxyHostTextBox.Text = "";
+                SettingsProxyPortTextBox.Text = "";
+            }
         }
 
         private void RemoveProxyListButton_Click(object sender, EventArgs e)
@@ -341,6 +305,11 @@ namespace KMS_Helper
                 JsonHandler jsonHandler = new JsonHandler();
                 jsonHandler.DeleteSettings();
             }
+        }
+
+        private void DeselectProxy_Click(object sender, EventArgs e)
+        {
+            ProxyListBox.SelectedIndex = -1;
         }
     }
 }

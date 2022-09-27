@@ -32,6 +32,7 @@
             this.NetworkListBox = new System.Windows.Forms.ListBox();
             this.CurrentWlanTextBox = new System.Windows.Forms.TextBox();
             this.SettingsPanel = new System.Windows.Forms.Panel();
+            this.SettingsDeleteConfigButton = new System.Windows.Forms.Button();
             this.LoadingSpinnerPictureBox = new System.Windows.Forms.PictureBox();
             this.SettingsRunBgOnStartCheckBox = new System.Windows.Forms.CheckBox();
             this.SettingsSaveButton = new System.Windows.Forms.Button();
@@ -52,7 +53,7 @@
             this.SetProxyButton = new System.Windows.Forms.Button();
             this.ProxyListBox = new System.Windows.Forms.ListBox();
             this.RemoveProxyListButton = new System.Windows.Forms.Button();
-            this.SettingsDeleteConfigButton = new System.Windows.Forms.Button();
+            this.DeselectProxy = new System.Windows.Forms.Button();
             this.SettingsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LoadingSpinnerPictureBox)).BeginInit();
             this.SuspendLayout();
@@ -97,6 +98,16 @@
             this.SettingsPanel.Name = "SettingsPanel";
             this.SettingsPanel.Size = new System.Drawing.Size(393, 354);
             this.SettingsPanel.TabIndex = 2;
+            // 
+            // SettingsDeleteConfigButton
+            // 
+            this.SettingsDeleteConfigButton.Location = new System.Drawing.Point(269, 3);
+            this.SettingsDeleteConfigButton.Name = "SettingsDeleteConfigButton";
+            this.SettingsDeleteConfigButton.Size = new System.Drawing.Size(119, 23);
+            this.SettingsDeleteConfigButton.TabIndex = 16;
+            this.SettingsDeleteConfigButton.Text = "Delete Config File";
+            this.SettingsDeleteConfigButton.UseVisualStyleBackColor = true;
+            this.SettingsDeleteConfigButton.Click += new System.EventHandler(this.SettingsDeleteConfigButton_Click);
             // 
             // LoadingSpinnerPictureBox
             // 
@@ -284,7 +295,7 @@
             // 
             // RemoveProxyListButton
             // 
-            this.RemoveProxyListButton.Location = new System.Drawing.Point(207, 391);
+            this.RemoveProxyListButton.Location = new System.Drawing.Point(207, 373);
             this.RemoveProxyListButton.Name = "RemoveProxyListButton";
             this.RemoveProxyListButton.Size = new System.Drawing.Size(152, 23);
             this.RemoveProxyListButton.TabIndex = 16;
@@ -292,21 +303,22 @@
             this.RemoveProxyListButton.UseVisualStyleBackColor = true;
             this.RemoveProxyListButton.Click += new System.EventHandler(this.RemoveProxyListButton_Click);
             // 
-            // SettingsDeleteConfigButton
+            // DeselectProxy
             // 
-            this.SettingsDeleteConfigButton.Location = new System.Drawing.Point(269, 3);
-            this.SettingsDeleteConfigButton.Name = "SettingsDeleteConfigButton";
-            this.SettingsDeleteConfigButton.Size = new System.Drawing.Size(119, 23);
-            this.SettingsDeleteConfigButton.TabIndex = 16;
-            this.SettingsDeleteConfigButton.Text = "Delete Config File";
-            this.SettingsDeleteConfigButton.UseVisualStyleBackColor = true;
-            this.SettingsDeleteConfigButton.Click += new System.EventHandler(this.SettingsDeleteConfigButton_Click);
+            this.DeselectProxy.Location = new System.Drawing.Point(207, 402);
+            this.DeselectProxy.Name = "DeselectProxy";
+            this.DeselectProxy.Size = new System.Drawing.Size(152, 23);
+            this.DeselectProxy.TabIndex = 17;
+            this.DeselectProxy.Text = "Deselect";
+            this.DeselectProxy.UseVisualStyleBackColor = true;
+            this.DeselectProxy.Click += new System.EventHandler(this.DeselectProxy_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.DeselectProxy);
             this.Controls.Add(this.RemoveProxyListButton);
             this.Controls.Add(this.ProxyListBox);
             this.Controls.Add(this.SetProxyButton);
@@ -356,5 +368,6 @@
         private ListBox ProxyListBox;
         private Button RemoveProxyListButton;
         private Button SettingsDeleteConfigButton;
+        private Button DeselectProxy;
     }
 }
