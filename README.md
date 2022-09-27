@@ -4,11 +4,12 @@
 #### Current Build can be found under [Releases](https://github.com/Der-Floh/KMS-Helper-2.0/releases).
 
 ## Help
-#### If any issues occur your free to create an [Issue](https://github.com/Der-Floh/KMS-Helper-2.0/issues/new) or view all [issues](https://github.com/Der-Floh/KMS-Helper-2.0/issues)
+#### Most of the time should anything go wrong you can delete the *config.json* file found in *C:\Users\YourUserName\AppData\Local\KMS-Helper*.
+#### Still: If any issues occur you're free to create an [issue](https://github.com/Der-Floh/KMS-Helper-2.0/issues/new) or view all [issues](https://github.com/Der-Floh/KMS-Helper-2.0/issues)
 
 ## Features
 ### Current Features
- - Set your Proxy Fast and Simple even if the Setting is disabled
+ - Set your Proxy Fast and Simple even if the Windows setting is disabled
  - Save multiple proxies and switch between them fast
  - Auto start the application when Windows starts to set your Proxy on startup
  - Auto start the application in background to let your selected proxy be automatically set if, before set, standard Wlan is found
