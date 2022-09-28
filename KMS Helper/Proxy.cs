@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace KMS_Helper
+﻿namespace KMS_Helper
 {
     public sealed class Proxy
     {

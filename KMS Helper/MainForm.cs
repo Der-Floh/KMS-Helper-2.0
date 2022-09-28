@@ -1,9 +1,7 @@
 using KMS_Toolkit;
-using Microsoft.Win32.TaskScheduler;
 using NativeWifi;
 using System.ComponentModel;
 using System.Text;
-using System.Windows.Forms.VisualStyles;
 
 namespace KMS_Helper
 {

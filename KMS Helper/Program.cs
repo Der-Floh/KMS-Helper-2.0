@@ -1,9 +1,7 @@
 using KMS_Toolkit;
 using Microsoft.Win32.TaskScheduler;
 using NativeWifi;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using static NativeWifi.WlanClient;
 
 namespace KMS_Helper
 {
