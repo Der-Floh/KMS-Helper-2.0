@@ -1,6 +1,6 @@
 ﻿using Microsoft.Win32;
 
-namespace KMS_Toolkit
+namespace KMS_Helper
 {
     public static class RegeditHelper
     {
