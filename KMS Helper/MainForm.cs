@@ -205,6 +205,11 @@ namespace KMS_Helper
 
         private void SettingsResetButton_Click(object sender, EventArgs e)
         {
+            SettingsReset();
+        }
+
+        public void SettingsReset()
+        {
             DialogResult result = MessageBox.Show("Are you sure you want to reset the settings to default?", "Reset Settings?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (result == DialogResult.Yes)
             {
@@ -220,6 +225,7 @@ namespace KMS_Helper
         private void SetProxyButton_Click(object sender, EventArgs e)
         {
             string proxyHost = SettingsProxyHostTextBox.Text;
+            if (proxyHost.Length == 0) return;
             int proxyPort = -1;
             if (!int.TryParse(SettingsProxyPortTextBox.Text, out proxyPort)) return;
 
@@ -234,8 +240,7 @@ namespace KMS_Helper
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            UpdateSettings();
-            Settings.Save();
+            CloseProgram();
         }
 
         private void SettingsProxyHostTextBox_TextChanged(object sender, EventArgs e)
@@ -294,6 +299,11 @@ namespace KMS_Helper
 
         private void SettingsDeleteConfigButton_Click(object sender, EventArgs e)
         {
+            DeleteConfig();
+        }
+
+        public void DeleteConfig()
+        {
             DialogResult result = MessageBox.Show("Are you sure you want to delete the config file?\nThis will reset all Settings to their default value", "Delete Config?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (result == DialogResult.Yes)
             {
@@ -307,6 +317,120 @@ namespace KMS_Helper
         private void DeselectProxy_Click(object sender, EventArgs e)
         {
             ProxyListBox.SelectedIndex = -1;
+        }
+
+        private void SystemTrayIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ShowForm();
+            WindowState = FormWindowState.Normal;
+        }
+
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+                HideForm();
+        }
+
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CloseProgram();
+        }
+
+        public void CloseProgram()
+        {
+            UpdateSettings();
+            Settings.Save(false);
+            Application.Exit();
+        }
+
+        public void HideForm()
+        {
+            Hide();
+            SystemTrayIcon.Visible = true;
+        }
+        public void ShowForm()
+        {
+            UpdateSettingsPanel();
+            Show();
+            SystemTrayIcon.Visible = false;
+        }
+
+        private void showWindowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ShowForm();
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UpdateSettings();
+            Settings.Save();
+        }
+
+        private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Settings.Reload();
+            UpdateSettingsPanel();
+        }
+
+        private void checkWlanOnWindowsStartToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SettingsCheckWlanOnStartCheckBox.Checked = checkWlanOnWindowsStartToolStripMenuItem.Checked;
+            UpdateSettings();
+            Settings.Save();
+        }
+
+        private void onAutoStartRunBackgroundToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SettingsCheckWlanOnStartCheckBox.Checked = checkWlanOnWindowsStartToolStripMenuItem.Checked;
+            UpdateSettings();
+            Settings.Save();
+        }
+
+        private void minimizeInSystemTrayToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SettingsMinimizeInTrayCheckBox.Checked = minimizeInSystemTrayToolStripMenuItem.Checked;
+            UpdateSettings();
+            Settings.Save();
+        }
+
+        private void proxyPortToolStripTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void setProxyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string proxyHost = proxyHostToolStripTextBox.Text;
+            if (proxyHost.Length == 0) return;
+            int proxyPort = -1;
+            if (!int.TryParse(proxyPortToolStripTextBox.Text, out proxyPort)) return;
+
+            RegeditHelper.ChangeInternetSettings(1);
+            RegeditHelper.SetProxy(proxyHost, proxyPort.ToString());
+        }
+
+        private void removeProxyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RegeditHelper.RemoveProxy();
+        }
+
+        private void loadKMSProxyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            proxyHostToolStripTextBox.Text = Settings.kmsHost;
+            proxyPortToolStripTextBox.Text = Settings.kmsPort.ToString();
+        }
+
+        private void deleteConfigToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DeleteConfig();
+        }
+
+        private void resetToDefaultToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SettingsReset();
         }
     }
 }

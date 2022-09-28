@@ -37,10 +37,27 @@ namespace KMS_Helper
             if (preventSave) return;
             jsonHandler.WriteSettings(setting);
         }
+        public static void Save(bool async)
+        {
+            if (preventSave) return;
+            jsonHandler.WriteSettings(setting, async);
+        }
 
         public static void Reset()
         {
             setting = new Setting();
+        }
+
+        public static void Reload()
+        {
+            Setting newSetting = jsonHandler.GetSettings();
+            if (newSetting == null)
+                newSetting = setting;
+            else if (newSetting.proxies.Count == 0)
+                newSetting.proxies.Add(new Proxy { proxyHost = kmsHost, proxyPort = kmsPort });
+
+            setting = newSetting;
+            Save();
         }
     }
 }

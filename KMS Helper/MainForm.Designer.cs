@@ -28,10 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.NetworkListBox = new System.Windows.Forms.ListBox();
             this.CurrentWlanTextBox = new System.Windows.Forms.TextBox();
             this.SettingsPanel = new System.Windows.Forms.Panel();
+            this.SettingsMinimizeInTrayCheckBox = new System.Windows.Forms.CheckBox();
             this.SettingsDeleteConfigButton = new System.Windows.Forms.Button();
             this.LoadingSpinnerPictureBox = new System.Windows.Forms.PictureBox();
             this.SettingsRunBgOnStartCheckBox = new System.Windows.Forms.CheckBox();
@@ -54,8 +56,32 @@
             this.ProxyListBox = new System.Windows.Forms.ListBox();
             this.RemoveProxyListButton = new System.Windows.Forms.Button();
             this.DeselectProxy = new System.Windows.Forms.Button();
+            this.SystemTrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.SystemTrayContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.showWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitProgramToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetToDefaultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.checkWlanOnWindowsStartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.onAutoStartRunBackgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.minimizeInSystemTrayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.proxyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.proxyHostToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.portToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.proxyPortToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.loadKMSProxyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.setProxyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeProxyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SettingsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LoadingSpinnerPictureBox)).BeginInit();
+            this.SystemTrayContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // NetworkListBox
@@ -79,6 +105,7 @@
             // SettingsPanel
             // 
             this.SettingsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.SettingsPanel.Controls.Add(this.SettingsMinimizeInTrayCheckBox);
             this.SettingsPanel.Controls.Add(this.SettingsDeleteConfigButton);
             this.SettingsPanel.Controls.Add(this.LoadingSpinnerPictureBox);
             this.SettingsPanel.Controls.Add(this.SettingsRunBgOnStartCheckBox);
@@ -98,6 +125,18 @@
             this.SettingsPanel.Name = "SettingsPanel";
             this.SettingsPanel.Size = new System.Drawing.Size(393, 354);
             this.SettingsPanel.TabIndex = 2;
+            // 
+            // SettingsMinimizeInTrayCheckBox
+            // 
+            this.SettingsMinimizeInTrayCheckBox.AutoSize = true;
+            this.SettingsMinimizeInTrayCheckBox.Checked = true;
+            this.SettingsMinimizeInTrayCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.SettingsMinimizeInTrayCheckBox.Location = new System.Drawing.Point(153, 108);
+            this.SettingsMinimizeInTrayCheckBox.Name = "SettingsMinimizeInTrayCheckBox";
+            this.SettingsMinimizeInTrayCheckBox.Size = new System.Drawing.Size(153, 19);
+            this.SettingsMinimizeInTrayCheckBox.TabIndex = 17;
+            this.SettingsMinimizeInTrayCheckBox.Text = "Minimize in System Tray";
+            this.SettingsMinimizeInTrayCheckBox.UseVisualStyleBackColor = true;
             // 
             // SettingsDeleteConfigButton
             // 
@@ -313,6 +352,183 @@
             this.DeselectProxy.UseVisualStyleBackColor = true;
             this.DeselectProxy.Click += new System.EventHandler(this.DeselectProxy_Click);
             // 
+            // SystemTrayIcon
+            // 
+            this.SystemTrayIcon.ContextMenuStrip = this.SystemTrayContextMenu;
+            this.SystemTrayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("SystemTrayIcon.Icon")));
+            this.SystemTrayIcon.Text = "KMS Helper 2.0";
+            this.SystemTrayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.SystemTrayIcon_MouseDoubleClick);
+            // 
+            // SystemTrayContextMenu
+            // 
+            this.SystemTrayContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showWindowToolStripMenuItem,
+            this.exitProgramToolStripMenuItem,
+            this.settingsToolStripMenuItem,
+            this.proxyToolStripMenuItem});
+            this.SystemTrayContextMenu.Name = "contextMenuStrip1";
+            this.SystemTrayContextMenu.Size = new System.Drawing.Size(151, 92);
+            // 
+            // showWindowToolStripMenuItem
+            // 
+            this.showWindowToolStripMenuItem.Name = "showWindowToolStripMenuItem";
+            this.showWindowToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.showWindowToolStripMenuItem.Text = "Show Window";
+            this.showWindowToolStripMenuItem.Click += new System.EventHandler(this.showWindowToolStripMenuItem_Click);
+            // 
+            // exitProgramToolStripMenuItem
+            // 
+            this.exitProgramToolStripMenuItem.Name = "exitProgramToolStripMenuItem";
+            this.exitProgramToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.exitProgramToolStripMenuItem.Text = "Exit Program";
+            this.exitProgramToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveToolStripMenuItem,
+            this.reloadToolStripMenuItem,
+            this.resetToDefaultToolStripMenuItem,
+            this.deleteConfigToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.checkWlanOnWindowsStartToolStripMenuItem,
+            this.onAutoStartRunBackgroundToolStripMenuItem,
+            this.minimizeInSystemTrayToolStripMenuItem});
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // reloadToolStripMenuItem
+            // 
+            this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
+            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.reloadToolStripMenuItem.Text = "Reload";
+            this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
+            // 
+            // resetToDefaultToolStripMenuItem
+            // 
+            this.resetToDefaultToolStripMenuItem.Name = "resetToDefaultToolStripMenuItem";
+            this.resetToDefaultToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.resetToDefaultToolStripMenuItem.Text = "Reset to Default";
+            this.resetToDefaultToolStripMenuItem.Click += new System.EventHandler(this.resetToDefaultToolStripMenuItem_Click);
+            // 
+            // deleteConfigToolStripMenuItem
+            // 
+            this.deleteConfigToolStripMenuItem.Name = "deleteConfigToolStripMenuItem";
+            this.deleteConfigToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.deleteConfigToolStripMenuItem.Text = "Delete Config";
+            this.deleteConfigToolStripMenuItem.Click += new System.EventHandler(this.deleteConfigToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(229, 6);
+            // 
+            // checkWlanOnWindowsStartToolStripMenuItem
+            // 
+            this.checkWlanOnWindowsStartToolStripMenuItem.CheckOnClick = true;
+            this.checkWlanOnWindowsStartToolStripMenuItem.Name = "checkWlanOnWindowsStartToolStripMenuItem";
+            this.checkWlanOnWindowsStartToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.checkWlanOnWindowsStartToolStripMenuItem.Text = "Check Wlan on Windows start";
+            this.checkWlanOnWindowsStartToolStripMenuItem.Click += new System.EventHandler(this.checkWlanOnWindowsStartToolStripMenuItem_Click);
+            // 
+            // onAutoStartRunBackgroundToolStripMenuItem
+            // 
+            this.onAutoStartRunBackgroundToolStripMenuItem.CheckOnClick = true;
+            this.onAutoStartRunBackgroundToolStripMenuItem.Name = "onAutoStartRunBackgroundToolStripMenuItem";
+            this.onAutoStartRunBackgroundToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.onAutoStartRunBackgroundToolStripMenuItem.Text = "On auto start run background";
+            this.onAutoStartRunBackgroundToolStripMenuItem.Click += new System.EventHandler(this.onAutoStartRunBackgroundToolStripMenuItem_Click);
+            // 
+            // minimizeInSystemTrayToolStripMenuItem
+            // 
+            this.minimizeInSystemTrayToolStripMenuItem.Checked = true;
+            this.minimizeInSystemTrayToolStripMenuItem.CheckOnClick = true;
+            this.minimizeInSystemTrayToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.minimizeInSystemTrayToolStripMenuItem.Name = "minimizeInSystemTrayToolStripMenuItem";
+            this.minimizeInSystemTrayToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.minimizeInSystemTrayToolStripMenuItem.Text = "Minimize in System Tray";
+            this.minimizeInSystemTrayToolStripMenuItem.Click += new System.EventHandler(this.minimizeInSystemTrayToolStripMenuItem_Click);
+            // 
+            // proxyToolStripMenuItem
+            // 
+            this.proxyToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.hostToolStripMenuItem,
+            this.portToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.loadKMSProxyToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.setProxyToolStripMenuItem,
+            this.removeProxyToolStripMenuItem});
+            this.proxyToolStripMenuItem.Name = "proxyToolStripMenuItem";
+            this.proxyToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.proxyToolStripMenuItem.Text = "Proxy";
+            // 
+            // hostToolStripMenuItem
+            // 
+            this.hostToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.proxyHostToolStripTextBox});
+            this.hostToolStripMenuItem.Name = "hostToolStripMenuItem";
+            this.hostToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.hostToolStripMenuItem.Text = "Host";
+            // 
+            // proxyHostToolStripTextBox
+            // 
+            this.proxyHostToolStripTextBox.Name = "proxyHostToolStripTextBox";
+            this.proxyHostToolStripTextBox.Size = new System.Drawing.Size(100, 23);
+            // 
+            // portToolStripMenuItem
+            // 
+            this.portToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.proxyPortToolStripTextBox});
+            this.portToolStripMenuItem.Name = "portToolStripMenuItem";
+            this.portToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.portToolStripMenuItem.Text = "Port";
+            // 
+            // proxyPortToolStripTextBox
+            // 
+            this.proxyPortToolStripTextBox.Name = "proxyPortToolStripTextBox";
+            this.proxyPortToolStripTextBox.Size = new System.Drawing.Size(100, 23);
+            this.proxyPortToolStripTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.proxyPortToolStripTextBox_KeyPress);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
+            // 
+            // loadKMSProxyToolStripMenuItem
+            // 
+            this.loadKMSProxyToolStripMenuItem.Name = "loadKMSProxyToolStripMenuItem";
+            this.loadKMSProxyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadKMSProxyToolStripMenuItem.Text = "Load KMS Proxy";
+            this.loadKMSProxyToolStripMenuItem.Click += new System.EventHandler(this.loadKMSProxyToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            // 
+            // setProxyToolStripMenuItem
+            // 
+            this.setProxyToolStripMenuItem.Name = "setProxyToolStripMenuItem";
+            this.setProxyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.setProxyToolStripMenuItem.Text = "Set Proxy";
+            this.setProxyToolStripMenuItem.Click += new System.EventHandler(this.setProxyToolStripMenuItem_Click);
+            // 
+            // removeProxyToolStripMenuItem
+            // 
+            this.removeProxyToolStripMenuItem.Name = "removeProxyToolStripMenuItem";
+            this.removeProxyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.removeProxyToolStripMenuItem.Text = "Remove Proxy";
+            this.removeProxyToolStripMenuItem.Click += new System.EventHandler(this.removeProxyToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -334,9 +550,11 @@
             this.Name = "MainForm";
             this.Text = "KMS Helper 2.0";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.SettingsPanel.ResumeLayout(false);
             this.SettingsPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LoadingSpinnerPictureBox)).EndInit();
+            this.SystemTrayContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -369,5 +587,29 @@
         private Button RemoveProxyListButton;
         private Button SettingsDeleteConfigButton;
         private Button DeselectProxy;
+        private NotifyIcon SystemTrayIcon;
+        private ContextMenuStrip SystemTrayContextMenu;
+        private ToolStripMenuItem exitProgramToolStripMenuItem;
+        private CheckBox SettingsMinimizeInTrayCheckBox;
+        private ToolStripMenuItem showWindowToolStripMenuItem;
+        private ToolStripMenuItem settingsToolStripMenuItem;
+        private ToolStripMenuItem saveToolStripMenuItem;
+        private ToolStripMenuItem resetToDefaultToolStripMenuItem;
+        private ToolStripMenuItem deleteConfigToolStripMenuItem;
+        private ToolStripMenuItem proxyToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripMenuItem checkWlanOnWindowsStartToolStripMenuItem;
+        private ToolStripMenuItem onAutoStartRunBackgroundToolStripMenuItem;
+        private ToolStripMenuItem minimizeInSystemTrayToolStripMenuItem;
+        private ToolStripMenuItem hostToolStripMenuItem;
+        private ToolStripTextBox proxyHostToolStripTextBox;
+        private ToolStripMenuItem portToolStripMenuItem;
+        private ToolStripTextBox proxyPortToolStripTextBox;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripMenuItem setProxyToolStripMenuItem;
+        private ToolStripMenuItem removeProxyToolStripMenuItem;
+        private ToolStripMenuItem reloadToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator3;
+        private ToolStripMenuItem loadKMSProxyToolStripMenuItem;
     }
 }

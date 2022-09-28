@@ -1,4 +1,4 @@
-# KMS Helper
+# KMS Helper 2.0
 
 ## Download
 #### Current Build can be found under [Releases](https://github.com/Der-Floh/KMS-Helper-2.0/releases).

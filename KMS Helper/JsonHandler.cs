@@ -34,6 +34,29 @@ namespace KMS_Helper
                     OnSaved(this, new MyEventArgs("Failed"));
             }
         }
+        public void WriteSettings(Setting setting, bool async)
+        {
+            if (async)
+            {
+                WriteSettings(setting);
+                return;
+            }
+            try
+            {
+                if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+                var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
+                using FileStream createStream = File.Create(filePath);
+                JsonSerializer.Serialize(createStream, setting, jsonOptions);
+                createStream.Dispose();
+                if (OnSaved != null)
+                    OnSaved(this, new MyEventArgs("Saved"));
+            }
+            catch
+            {
+                if (OnSaved != null)
+                    OnSaved(this, new MyEventArgs("Failed"));
+            }
+        }
 
         public Setting GetSettings()
         {

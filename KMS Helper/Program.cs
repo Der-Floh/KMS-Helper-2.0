@@ -12,9 +12,10 @@ namespace KMS_Helper
         private static TaskService taskService = new TaskService();
         private static TaskDefinition taskDefinition;
         public static bool TaskExists;
-        private static System.Threading.Timer timer;
-        private static int maxCount = 40;
-        private static int invokeCount = 0;
+        private static System.Threading.Timer scanTimer;
+        private static System.Threading.Timer proxyCheckTimer;
+        private static int maxScanCount = 40;
+        private static int scanInvokeCount = 0;
 
         [STAThread]
         static void Main()
@@ -24,19 +25,20 @@ namespace KMS_Helper
 
             if (Settings.autoStartRunBackground && Settings.autoStart && Array.Exists(args, x => x == "runbg"))
             {
-                timer = new System.Threading.Timer(ScanNetworks, null, 500, Timeout.Infinite);
-                Application.Run();
+                scanTimer = new System.Threading.Timer(ScanNetworks, null, 500, Timeout.Infinite);
             }
             else
             {
                 ApplicationConfiguration.Initialize();
-                Application.Run(new MainForm());
+                MainForm mainForm = new MainForm();
+                mainForm.HideForm();
             }
+            Application.Run();
         }
 
         private static void ScanNetworks(object stateInfo)
         {
-            invokeCount++;
+            scanInvokeCount++;
             PullNetworkList();
             networkDictionary.Clear();
             foreach (Wlan.Dot11Ssid network in networkList)
@@ -44,7 +46,7 @@ namespace KMS_Helper
                 networkDictionary.Add(network, Encoding.ASCII.GetString(network.SSID, 0, (int)network.SSIDLength));
                 if (WlanSsidEqual(network, Settings.standardSsid))
                 {
-                    invokeCount = maxCount;
+                    scanInvokeCount = maxScanCount;
                     int selectedProxy = 0;
                     RegeditHelper.ChangeInternetSettings(1);
                     if (Settings.selectedProxy == -1)
@@ -55,9 +57,9 @@ namespace KMS_Helper
                     Application.Exit();
                 }
             }
-            if (invokeCount < maxCount)
+            if (scanInvokeCount < maxScanCount)
             {
-                timer.Change(500, Timeout.Infinite);
+                scanTimer.Change(500, Timeout.Infinite);
             }
         }
 
