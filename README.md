@@ -16,3 +16,4 @@
 
 ### Planned Features
  - Check to automatically reset the Proxy if something changed or disabled the Windows setting
+ - System Tray Icon with various Features
