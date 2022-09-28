@@ -71,6 +71,7 @@ namespace KMS_Helper
 
             foreach (WlanClient.WlanInterface wlanIface in client.Interfaces)
             {
+                wlanIface.Scan();
                 Wlan.WlanAvailableNetwork[] networks = wlanIface.GetAvailableNetworkList(Wlan.WlanGetAvailableNetworkFlags.IncludeAllManualHiddenProfiles);
                 foreach (Wlan.WlanAvailableNetwork network in networks)
                 {
