@@ -3,6 +3,7 @@ using Microsoft.Win32.TaskScheduler;
 using NativeWifi;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using static NativeWifi.WlanClient;
 
 namespace KMS_Helper
 {
@@ -17,7 +18,6 @@ namespace KMS_Helper
         private static System.Threading.Timer timer;
         private static int maxCount = 40;
         private static int invokeCount = 0;
-        private static bool exit;
 
         [STAThread]
         static void Main()
@@ -49,14 +49,11 @@ namespace KMS_Helper
                 {
                     invokeCount = maxCount;
                     int selectedProxy = 0;
+                    RegeditHelper.ChangeInternetSettings(1);
                     if (Settings.selectedProxy == -1)
-                    {
-                        RegeditHelper.ChangeInternetSettings(1);
                         return;
-                    }
                     else if (Settings.selectedProxy < Settings.proxies.Count)
                         selectedProxy = Settings.selectedProxy;
-                    RegeditHelper.ChangeInternetSettings(1);
                     RegeditHelper.SetProxy(Settings.proxies[selectedProxy].proxyHost, Settings.proxies[selectedProxy].proxyPort.ToString());
                     Application.Exit();
                 }
@@ -77,7 +74,7 @@ namespace KMS_Helper
 
             foreach (WlanClient.WlanInterface wlanIface in client.Interfaces)
             {
-                Wlan.WlanAvailableNetwork[] networks = wlanIface.GetAvailableNetworkList(0);
+                Wlan.WlanAvailableNetwork[] networks = wlanIface.GetAvailableNetworkList(Wlan.WlanGetAvailableNetworkFlags.IncludeAllManualHiddenProfiles);
                 foreach (Wlan.WlanAvailableNetwork network in networks)
                 {
                     ssidNew = network.dot11Ssid;
