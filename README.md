@@ -1,4 +1,6 @@
 # KMS Helper 2.0
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/Der-Floh/KMS-Helper-2.0/blob/master/README.md)
+[![de](https://img.shields.io/badge/lang-de-green.svg)](https://github.com/Der-Floh/KMS-Helper-2.0/blob/master/README.de.md)
 
 ## Download
 #### Current Build can be found under [Releases](https://github.com/Der-Floh/KMS-Helper-2.0/releases).
