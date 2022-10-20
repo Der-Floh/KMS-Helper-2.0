@@ -24,17 +24,7 @@ namespace KMS_Helper
         {
             Settings.Init();
             string[] args = Environment.GetCommandLineArgs();
-            /*
-            if (Settings.autoStartRunBackground && Settings.autoStart && Array.Exists(args, x => x == "runbg"))
-            {
-                scanTimer = new Timer(ScanNetworks, null, 500, Timeout.Infinite);
-            }
-            else
-            {
-                ApplicationConfiguration.Initialize();
-                MainForm mainForm = new MainForm();
-                mainForm.ShowForm();
-            }*/
+            
             ApplicationConfiguration.Initialize();
             MainForm mainForm = new MainForm();
             if (Settings.autoStartRunBackground && Settings.autoStart && Array.Exists(args, x => x == "runbg"))

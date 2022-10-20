@@ -14,6 +14,7 @@ namespace KMS_Helper
         private Wlan.Dot11Ssid currentSsid;
         private Wlan.Dot11Ssid standardSsid;
         private bool systemTrayClose = true;
+        private bool autoSetWlan;
 
         public MainForm()
         {
@@ -31,6 +32,7 @@ namespace KMS_Helper
             }
 
             Settings.jsonHandler.OnSaved += new MyEventHandler(OnSaved);
+            autoSetWlan = Settings.autoStart;
 
             NetworkListBox.DisplayMember = "Value";
             NetworkListBox.ValueMember = "Key";
@@ -76,7 +78,25 @@ namespace KMS_Helper
 
         private void PullNetworkList(object sender, EventArgs e)
         {
-            FillNetworkList(Program.PullNetworkList());
+            List<Wlan.Dot11Ssid> dot11Ssids = Program.PullNetworkList();
+            FillNetworkList(dot11Ssids);
+            if (autoSetWlan)
+            {
+                foreach (Wlan.Dot11Ssid network in dot11Ssids)
+                {
+                    if (Program.WlanSsidEqual(network, Settings.standardSsid))
+                    {
+                        int selectedProxy = 0;
+                        RegeditHelper.ChangeInternetSettings(1);
+                        if (Settings.selectedProxy == -1)
+                            return;
+                        else if (Settings.selectedProxy < Settings.proxies.Count)
+                            selectedProxy = Settings.selectedProxy;
+                        RegeditHelper.SetProxy(Settings.proxies[selectedProxy].proxyHost, Settings.proxies[selectedProxy].proxyPort.ToString());
+                        autoSetWlan = false;
+                    }
+                }
+            }
         }
 
         private async Task FillNetworkList(List<Wlan.Dot11Ssid> networkListOld)
