@@ -8,7 +8,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon>Resources\kms-logo.ico</ApplicationIcon>
+    <ApplicationIcon>kms-logo-ico-white.ico</ApplicationIcon>
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
   </PropertyGroup>
 
@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Resources\kms-logo.ico" />
+    <Content Include="kms-logo-ico-white.ico" />
   </ItemGroup>
 
   <ItemGroup>

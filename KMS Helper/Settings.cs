@@ -15,6 +15,7 @@ namespace KMS_Helper
         public static int selectedProxy { get { return setting.selectedProxy; } set { setting.selectedProxy = value; } }
         public static bool autoStart { get { return setting.autoStart; } set { setting.autoStart = value; } }
         public static bool autoStartRunBackground { get { return setting.autoStartRunBackground; } set { setting.autoStartRunBackground = value; } }
+        public static bool minimizeInTray { get { return setting.minimizeInTray; } set { setting.minimizeInTray = value; } }
         public static Point windowPosition { get { return setting.windowPosition; } set { setting.windowPosition = value; } }
 
         public static void Init()
@@ -30,6 +31,9 @@ namespace KMS_Helper
             {
                 proxies.Add(new Proxy { proxyHost = kmsHost, proxyPort = kmsPort });
             }
+            autoStart = Program.LogonTaskExists();
+            if (autoStart) autoStartRunBackground = Program.LogonTaskRunBG();
+            else autoStartRunBackground = false;
         }
 
         public static void Save()

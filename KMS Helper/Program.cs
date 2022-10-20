@@ -1,6 +1,7 @@
 using Microsoft.Win32.TaskScheduler;
 using NativeWifi;
 using System.Text;
+using Timer = System.Threading.Timer;
 
 namespace KMS_Helper
 {
@@ -12,27 +13,34 @@ namespace KMS_Helper
         private static TaskService taskService = new TaskService();
         private static TaskDefinition taskDefinition;
         public static bool TaskExists;
-        private static System.Threading.Timer scanTimer;
-        private static System.Threading.Timer proxyCheckTimer;
+        private static Timer scanTimer;
+        private static Timer proxyCheckTimer;
         private static int maxScanCount = 40;
         private static int scanInvokeCount = 0;
+        private static string logonTaskName = "KMS-Helper-WlanCheck";
 
         [STAThread]
         static void Main()
         {
             Settings.Init();
             string[] args = Environment.GetCommandLineArgs();
-
+            /*
             if (Settings.autoStartRunBackground && Settings.autoStart && Array.Exists(args, x => x == "runbg"))
             {
-                scanTimer = new System.Threading.Timer(ScanNetworks, null, 500, Timeout.Infinite);
+                scanTimer = new Timer(ScanNetworks, null, 500, Timeout.Infinite);
             }
             else
             {
                 ApplicationConfiguration.Initialize();
                 MainForm mainForm = new MainForm();
+                mainForm.ShowForm();
+            }*/
+            ApplicationConfiguration.Initialize();
+            MainForm mainForm = new MainForm();
+            if (Settings.autoStartRunBackground && Settings.autoStart && Array.Exists(args, x => x == "runbg"))
                 mainForm.HideForm();
-            }
+            else
+                mainForm.ShowForm();
             Application.Run();
         }
 
@@ -74,7 +82,7 @@ namespace KMS_Helper
             foreach (WlanClient.WlanInterface wlanIface in client.Interfaces)
             {
                 wlanIface.Scan();
-                Wlan.WlanAvailableNetwork[] networks = wlanIface.GetAvailableNetworkList(Wlan.WlanGetAvailableNetworkFlags.IncludeAllManualHiddenProfiles);
+                Wlan.WlanAvailableNetwork[] networks = wlanIface.GetAvailableNetworkList(0);
                 foreach (Wlan.WlanAvailableNetwork network in networks)
                 {
                     ssidNew = network.dot11Ssid;
@@ -141,9 +149,12 @@ namespace KMS_Helper
 
             taskDefinition.Triggers.Add(new LogonTrigger());
 
-            taskDefinition.Actions.Add(new ExecAction(AppDomain.CurrentDomain.BaseDirectory + AppDomain.CurrentDomain.FriendlyName + ".exe", "runbg"));
+            string taskArgs = "";
+            if (Settings.autoStartRunBackground) taskArgs = "runbg";
+            ExecAction action = new ExecAction(Application.ExecutablePath, taskArgs);
+            taskDefinition.Actions.Add(action);
 
-            taskService.RootFolder.RegisterTaskDefinition("KMS-Helper-WlanCheck", taskDefinition);
+            taskService.RootFolder.RegisterTaskDefinition(logonTaskName, taskDefinition);
             TaskExists = true;
         }
 
@@ -151,10 +162,31 @@ namespace KMS_Helper
         {
             try
             {
-                taskService.RootFolder.DeleteTask("KMS-Helper-WlanCheck");
+                taskService.RootFolder.DeleteTask(logonTaskName);
             }
             catch { }
             TaskExists = false;
+        }
+
+        public static bool LogonTaskExists()
+        {
+            try
+            {
+                TaskCollection taskCollection = taskService.RootFolder.Tasks;
+                return taskCollection.Exists(logonTaskName);
+            }
+            catch { return false; }
+        }
+        public static bool LogonTaskRunBG()
+        {
+            try
+            {
+                TaskCollection taskCollection = taskService.RootFolder.Tasks;
+                Microsoft.Win32.TaskScheduler.Task task = taskCollection.First(x => x.Name == logonTaskName);
+                ExecAction action = (ExecAction)task.Definition.Actions.Find(x => ((ExecAction)x).Path == Application.ExecutablePath);
+                return action.Arguments == "runbg";
+            }
+            catch { return false; }
         }
     }
 }

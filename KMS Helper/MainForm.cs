@@ -1,6 +1,7 @@
 using NativeWifi;
 using System.ComponentModel;
 using System.Text;
+using Timer = System.Windows.Forms.Timer;
 
 namespace KMS_Helper
 {
@@ -8,15 +9,15 @@ namespace KMS_Helper
     {
         private BindingList<Proxy> proxies = new BindingList<Proxy>();
         private const string shortcutName = "KMS-Helper";
-        private System.Windows.Forms.Timer timer;
-        private System.Windows.Forms.Timer loadingTimer;
+        private Timer timer;
+        private Timer loadingTimer;
         private Wlan.Dot11Ssid currentSsid;
         private Wlan.Dot11Ssid standardSsid;
+        private bool systemTrayClose = true;
 
         public MainForm()
         {
             InitializeComponent();
-
             if (Settings.windowPosition.IsEmpty)
             {
                 CenterToScreen();
@@ -25,19 +26,21 @@ namespace KMS_Helper
             {
                 StartPosition = FormStartPosition.Manual;
                 Location = Settings.windowPosition;
+                if (!IsOnScreen())
+                    CenterToScreen();
             }
 
             Settings.jsonHandler.OnSaved += new MyEventHandler(OnSaved);
 
             NetworkListBox.DisplayMember = "Value";
             NetworkListBox.ValueMember = "Key";
-
-            timer = new System.Windows.Forms.Timer();
+            
+            timer = new Timer();
             timer.Interval = 200;
             timer.Tick += PullNetworkList;
             timer.Start();
 
-            loadingTimer = new System.Windows.Forms.Timer();
+            loadingTimer = new Timer();
             loadingTimer.Interval = 200;
             loadingTimer.Tick += LoadingSpinner;
 
@@ -76,7 +79,7 @@ namespace KMS_Helper
             FillNetworkList(Program.PullNetworkList());
         }
 
-        private async System.Threading.Tasks.Task FillNetworkList(List<Wlan.Dot11Ssid> networkListOld)
+        private async Task FillNetworkList(List<Wlan.Dot11Ssid> networkListOld)
         {
             if (Program.networkList.Count != 0 && !Program.ListsEqual(Program.networkList, networkListOld))
             {
@@ -121,20 +124,26 @@ namespace KMS_Helper
             try
             {
                 networkname = Encoding.ASCII.GetString(Settings.standardSsid.SSID, 0, (int)Settings.standardSsid.SSIDLength);
-            } catch { }
+            }
+            catch { }
             SettingsStandardWlanTextBox.Text = networkname;
             if (ProxyListBox.SelectedIndex != -1)
             {
                 SettingsProxyHostTextBox.Text = Settings.proxies[ProxyListBox.SelectedIndex].proxyHost;
                 SettingsProxyPortTextBox.Text = Settings.proxies[ProxyListBox.SelectedIndex].proxyPort.ToString();
+                proxyHostToolStripTextBox.Text = Settings.proxies[ProxyListBox.SelectedIndex].proxyHost;
+                proxyPortToolStripTextBox.Text = Settings.proxies[ProxyListBox.SelectedIndex].proxyPort.ToString();
             }
             else
             {
                 SettingsProxyHostTextBox.Text = "";
                 SettingsProxyPortTextBox.Text = "";
+                proxyHostToolStripTextBox.Text = "";
+                proxyPortToolStripTextBox.Text = "";
             }
             SettingsCheckWlanOnStartCheckBox.Checked = Settings.autoStart;
             SettingsRunBgOnStartCheckBox.Checked = Settings.autoStartRunBackground;
+            SettingsMinimizeInTrayCheckBox.Checked = Settings.minimizeInTray;
         }
         private void UpdateSettings()
         {
@@ -143,11 +152,13 @@ namespace KMS_Helper
             Settings.selectedProxy = ProxyListBox.SelectedIndex;
             Settings.autoStart = SettingsCheckWlanOnStartCheckBox.Checked;
             Settings.autoStartRunBackground = SettingsRunBgOnStartCheckBox.Checked;
+            Settings.minimizeInTray = SettingsMinimizeInTrayCheckBox.Checked;
 
             Settings.windowPosition = Location;
 
-            if (Settings.autoStart && !Program.TaskExists)
+            if (Settings.autoStart)
             {
+                Program.RemoveLogonWindowsTask();
                 Program.CreateLogonWindowsTask();
             }
             else if (!Settings.autoStart)
@@ -155,59 +166,6 @@ namespace KMS_Helper
                 Program.RemoveLogonWindowsTask();
             }
         }
-
-        private void NetworkListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (NetworkListBox.SelectedIndex == -1 || NetworkListBox.Items.Count == 0) return;
-            KeyValuePair<Wlan.Dot11Ssid, string> wlan = (KeyValuePair<Wlan.Dot11Ssid, string>)NetworkListBox.SelectedItem;
-            currentSsid = wlan.Key;
-            //string networkname = Encoding.ASCII.GetString(currentSsid.SSID, 0, (int)currentSsid.SSIDLength);
-            CurrentWlanTextBox.Text = wlan.Value;
-        }
-
-        private void SetStandardWlanButton_Click(object sender, EventArgs e)
-        {
-            SettingsSavedLabel.Visible = false;
-            if (!Settings.preventSave)
-            {
-                loadingTimer.Start();
-                LoadingSpinnerPictureBox.Visible = true;
-            }
-            standardSsid = currentSsid;
-            Settings.standardSsid = standardSsid;
-            Settings.Save();
-            UpdateSettingsPanel();
-        }
-
-        private void SettingsSaveButton_Click(object sender, EventArgs e)
-        {
-            if (!Settings.preventSave)
-            {
-                loadingTimer.Start();
-                LoadingSpinnerPictureBox.Visible = true;
-            }
-            UpdateSettings();
-            Settings.Save();
-        }
-
-        private void SettingsKMSStandardButton_Click(object sender, EventArgs e)
-        {
-            SettingsSavedLabel.Visible = false;
-            string proxyHost = SettingsProxyHostTextBox.Text;
-            int proxyPort = -1;
-            int.TryParse(SettingsProxyPortTextBox.Text, out proxyPort);
-
-            if (!proxies.ToList().Exists(p => p.proxyHost == proxyHost && p.proxyPort == proxyPort))
-            {
-                proxies.Add(new Proxy { proxyHost = proxyHost, proxyPort = proxyPort });
-            }
-        }
-
-        private void SettingsResetButton_Click(object sender, EventArgs e)
-        {
-            SettingsReset();
-        }
-
         public void SettingsReset()
         {
             DialogResult result = MessageBox.Show("Are you sure you want to reset the settings to default?", "Reset Settings?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -221,7 +179,100 @@ namespace KMS_Helper
                 UpdateSettingsPanel();
             }
         }
+        public void DeleteConfig()
+        {
+            DialogResult result = MessageBox.Show("Are you sure you want to delete the config file?\nThis will reset all Settings to their default value", "Delete Config?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result == DialogResult.Yes)
+            {
+                Settings.preventSave = true;
+                SettingsSavedLabel.Visible = false;
+                JsonHandler jsonHandler = new JsonHandler();
+                jsonHandler.DeleteSettings();
+            }
+        }
+        public void HideForm()
+        {
+            Hide();
+            SystemTrayIcon.Visible = true;
+        }
+        public void ShowForm()
+        {
+            UpdateSettingsPanel();
+            Show();
+            WindowState = FormWindowState.Normal;
+            BringToFront();
+            SystemTrayIcon.Visible = false;
+        }
+        public void CloseProgram()
+        {
+            UpdateSettings();
+            Settings.Save(false);
+            SystemTrayIcon.Visible = false;
+            Application.Exit();
+        }
+        public bool IsOnScreen()
+        {
+            Screen[] screens = Screen.AllScreens;
+            foreach (Screen screen in screens)
+            {
+                Rectangle formRectangle = new Rectangle(Left, Top, Width, Height);
 
+                if (screen.WorkingArea.Contains(formRectangle))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        #region FormEvents
+        private void NetworkListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (NetworkListBox.SelectedIndex == -1 || NetworkListBox.Items.Count == 0) return;
+            KeyValuePair<Wlan.Dot11Ssid, string> wlan = (KeyValuePair<Wlan.Dot11Ssid, string>)NetworkListBox.SelectedItem;
+            currentSsid = wlan.Key;
+            //string networkname = Encoding.ASCII.GetString(currentSsid.SSID, 0, (int)currentSsid.SSIDLength);
+            CurrentWlanTextBox.Text = wlan.Value;
+        }
+        private void SetStandardWlanButton_Click(object sender, EventArgs e)
+        {
+            SettingsSavedLabel.Visible = false;
+            if (!Settings.preventSave)
+            {
+                loadingTimer.Start();
+                LoadingSpinnerPictureBox.Visible = true;
+            }
+            standardSsid = currentSsid;
+            Settings.standardSsid = standardSsid;
+            Settings.Save();
+            UpdateSettingsPanel();
+        }
+        private void SettingsSaveButton_Click(object sender, EventArgs e)
+        {
+            if (!Settings.preventSave)
+            {
+                loadingTimer.Start();
+                LoadingSpinnerPictureBox.Visible = true;
+            }
+            UpdateSettings();
+            Settings.Save();
+        }
+        private void SettingsKMSStandardButton_Click(object sender, EventArgs e)
+        {
+            SettingsSavedLabel.Visible = false;
+            string proxyHost = SettingsProxyHostTextBox.Text;
+            int proxyPort = -1;
+            int.TryParse(SettingsProxyPortTextBox.Text, out proxyPort);
+
+            if (!proxies.ToList().Exists(p => p.proxyHost == proxyHost && p.proxyPort == proxyPort))
+            {
+                proxies.Add(new Proxy { proxyHost = proxyHost, proxyPort = proxyPort });
+            }
+        }
+        private void SettingsResetButton_Click(object sender, EventArgs e)
+        {
+            SettingsReset();
+        }
         private void SetProxyButton_Click(object sender, EventArgs e)
         {
             string proxyHost = SettingsProxyHostTextBox.Text;
@@ -232,37 +283,30 @@ namespace KMS_Helper
             RegeditHelper.ChangeInternetSettings(1);
             RegeditHelper.SetProxy(proxyHost, proxyPort.ToString());
         }
-
         private void RemoveProxyButton_Click(object sender, EventArgs e)
         {
             RegeditHelper.RemoveProxy();
         }
-
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             CloseProgram();
         }
-
         private void SettingsProxyHostTextBox_TextChanged(object sender, EventArgs e)
         {
             SettingsSavedLabel.Visible = false;
         }
-
         private void SettingsProxyPortTextBox_TextChanged(object sender, EventArgs e)
         {
             SettingsSavedLabel.Visible = false;
         }
-
         private void SettingsCheckWlanOnStartCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             SettingsSavedLabel.Visible = false;
         }
-
         private void SettingsRunBgOnStartCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             SettingsSavedLabel.Visible = false;
         }
-
         private void ProxyListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             Settings.proxies = proxies;
@@ -278,7 +322,6 @@ namespace KMS_Helper
                 SettingsProxyPortTextBox.Text = "";
             }
         }
-
         private void RemoveProxyListButton_Click(object sender, EventArgs e)
         {
             if (proxies[ProxyListBox.SelectedIndex].proxyHost == Settings.kmsHost && proxies[ProxyListBox.SelectedIndex].proxyPort == Settings.kmsPort)
@@ -288,7 +331,6 @@ namespace KMS_Helper
             }
             proxies.RemoveAt(ProxyListBox.SelectedIndex);
         }
-
         private void SettingsProxyPortTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
@@ -296,24 +338,10 @@ namespace KMS_Helper
                 e.Handled = true;
             }
         }
-
         private void SettingsDeleteConfigButton_Click(object sender, EventArgs e)
         {
             DeleteConfig();
         }
-
-        public void DeleteConfig()
-        {
-            DialogResult result = MessageBox.Show("Are you sure you want to delete the config file?\nThis will reset all Settings to their default value", "Delete Config?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            if (result == DialogResult.Yes)
-            {
-                Settings.preventSave = true;
-                SettingsSavedLabel.Visible = false;
-                JsonHandler jsonHandler = new JsonHandler();
-                jsonHandler.DeleteSettings();
-            }
-        }
-
         private void DeselectProxy_Click(object sender, EventArgs e)
         {
             ProxyListBox.SelectedIndex = -1;
@@ -327,32 +355,15 @@ namespace KMS_Helper
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
-            if (WindowState == FormWindowState.Minimized)
+            if (WindowState == FormWindowState.Minimized && Settings.minimizeInTray)
                 HideForm();
         }
 
+        #endregion
+        #region SystemTrayEvents
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CloseProgram();
-        }
-
-        public void CloseProgram()
-        {
-            UpdateSettings();
-            Settings.Save(false);
-            Application.Exit();
-        }
-
-        public void HideForm()
-        {
-            Hide();
-            SystemTrayIcon.Visible = true;
-        }
-        public void ShowForm()
-        {
-            UpdateSettingsPanel();
-            Show();
-            SystemTrayIcon.Visible = false;
         }
 
         private void showWindowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -432,5 +443,32 @@ namespace KMS_Helper
         {
             SettingsReset();
         }
+
+        private void SystemTrayContextMenu_Closing(object sender, ToolStripDropDownClosingEventArgs e)
+        {
+            e.Cancel = !systemTrayClose;
+            systemTrayClose = true;
+        }
+
+        private void minimizeInSystemTrayToolStripMenuItem_MouseDown(object sender, MouseEventArgs e)
+        {
+            systemTrayClose = false;
+        }
+
+        private void onAutoStartRunBackgroundToolStripMenuItem_MouseDown(object sender, MouseEventArgs e)
+        {
+            systemTrayClose = false;
+        }
+
+        private void checkWlanOnWindowsStartToolStripMenuItem_MouseDown(object sender, MouseEventArgs e)
+        {
+            systemTrayClose = false;
+        }
+
+        private void resetWindowLocationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CenterToScreen();
+        }
+        #endregion
     }
 }

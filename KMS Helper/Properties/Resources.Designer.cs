@@ -61,22 +61,42 @@ namespace KMS_Helper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Bitmap kms_logo {
+        public static System.Drawing.Icon kms_logo_ico {
             get {
-                object obj = ResourceManager.GetObject("kms_logo", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                object obj = ResourceManager.GetObject("kms_logo_ico", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon kms_logo1 {
+        public static System.Drawing.Icon kms_logo_ico_white {
             get {
-                object obj = ResourceManager.GetObject("kms_logo1", resourceCulture);
+                object obj = ResourceManager.GetObject("kms_logo_ico_white", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap kms_logo_png {
+            get {
+                object obj = ResourceManager.GetObject("kms_logo_png", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap kms_logo_png_white {
+            get {
+                object obj = ResourceManager.GetObject("kms_logo_png_white", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
