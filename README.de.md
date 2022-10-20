@@ -14,7 +14,7 @@
  - Speichere mehrere Proxies und wechsel schnell unter ihnen
  - Starte die App automatisch wenn Windows started und setze deinen Proxy beim starten
  - Starte die App automatisch im Hintergrund, um deinen Proxy automatisch setzen zu lassen, wenn das vorher ausgewählte standard Wlan gefunden wurde
+ - System Tray Icon mit verschiedenen Funktionen
 
 ### Geplante Funktionen
  - Prüfung um automaitsch den Proxy wieder zu setzen, wenn etwas diesen gelöscht hat oder die Eintellung in Windows deaktiviert wurde
- - System Tray Icon mit verschiedenen Funktionen

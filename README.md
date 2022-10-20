@@ -15,7 +15,7 @@
  - Save multiple proxies and switch between them fast
  - Auto start the application when Windows starts to set your Proxy on startup
  - Auto start the application in background to let your selected proxy be automatically set if, before set, standard Wlan is found
+ - System Tray Icon with various Features
 
 ### Planned Features
  - Check to automatically reset the Proxy if something changed or disabled the Windows setting
- - System Tray Icon with various Features
